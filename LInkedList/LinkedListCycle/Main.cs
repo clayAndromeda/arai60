@@ -10,17 +10,18 @@ public class ListNode
 }
 
 public class Solution {
-    public bool HasCycle(ListNode head) {
-        HashSet<int> valueSet = new();
-        ListNode current = head;
-        while (current != null)
+    public bool HasCycle(ListNode head)
+    {
+        var slow = head;
+        var fast = head;
+        while (fast != null && fast.next != null)
         {
-            if (valueSet.Contains(current.val))
+            slow = slow.next;
+            fast = slow.next.next;
+            if (slow.val == fast.val)
             {
                 return true;
             }
-            valueSet.Add(current.val);
-            current = current.next;
         }
         return false;
     }
