@@ -9,7 +9,8 @@
  *     }
  * }
  */
-public class Solution {
+public class Solution
+{
     public ListNode DetectCycle(ListNode head)
     {
         var slow = head;
@@ -20,17 +21,17 @@ public class Solution {
             fast = fast.next.next;
             if (slow == fast)
             {
-                // 開始ノードを特定する
-                slow = head;
-                while (slow != fast)
+                var ptr = head;
+                while (ptr != fast)
                 {
-                    slow = slow.next;
+                    ptr = ptr.next;
                     fast = fast.next;
                 }
-                return slow;
+
+                return ptr;
             }
         }
 
-        return null; // 循環なし
+        return null;
     }
 }
