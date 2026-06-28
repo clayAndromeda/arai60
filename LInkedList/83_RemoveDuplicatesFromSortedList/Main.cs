@@ -9,25 +9,23 @@
  *     }
  * }
  */
-public class Solution {
+public class Solution
+{
     public ListNode DeleteDuplicates(ListNode head)
     {
-        HashSet<int> vals = new();
-        var prev = head;
         var current = head;
-        while (current != null)
+        while (current != null && current.next != null)
         {
-            if (vals.Contains(current.val))
+            if (current.val == current.next.val)
             {
-                prev.next = current.next;
-                current = current.next;
+                int valToRemove = current.val;
+                while (current.next != null && current.next.val == valToRemove)
+                {
+                    current.next = current.next.next;
+                }
             }
-            else
-            {
-                vals.Add(current.val);
-                prev = current;
-                current = current.next;
-            }
+
+            current = current.next;
         }
         return head;
     }
