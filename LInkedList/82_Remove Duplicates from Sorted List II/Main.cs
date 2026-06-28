@@ -16,7 +16,6 @@ public class Solution
         var dummyHead = new ListNode(-1, head);
         var prev = dummyHead;
         var current = head;
-
         while (current != null)
         {
             if (current.next != null && current.val == current.next.val)
