@@ -1,14 +1,15 @@
 public class KthLargest
 {
-    private readonly int _k;
-    private readonly int[] _heap;
+    private int _k;
+    private int[] _heap;
     private int _size;
 
     public KthLargest(int k, int[] nums)
     {
         _k = k;
-        _heap = new int[k];
+        _heap = new int[_k];
         _size = 0;
+
         foreach (var num in nums)
         {
             Push(num);
@@ -26,42 +27,45 @@ public class KthLargest
         if (_size < _k)
         {
             _heap[_size] = val;
-            SiftUp(_size);
+            SiftUp();
             _size++;
         }
         else if (_size > 0 && val > _heap[0])
         {
-            // 最小値 (root) より大きいので、rootを置き換える
             _heap[0] = val;
-            SiftDown(0);
+            SiftDown();
         }
     }
 
-    private void SiftUp(int i)
+    private void SiftUp()
     {
-        while (i > 0)
+        int current = _size;
+        while (current > 0)
         {
-            int parent = (i - 1) / 2;
-            if (_heap[i] >= _heap[parent]) break;
-            (_heap[i], _heap[parent]) = (_heap[parent], _heap[i]);
-            i = parent;
+            int parent = (current - 1) / 2;
+            if (_heap[current] >= _heap[parent])
+            {
+                return;
+            }
+            (_heap[current], _heap[parent]) = (_heap[parent], _heap[current]);
+            current = parent;
         }
     }
 
-    private void SiftDown(int i)
+    private void SiftDown()
     {
+        int current = 0;
         while (true)
         {
-            int left = 2 * i + 1;
-            int right = 2 * i + 2;
-            int smallest = i;
+            int left = 2 * current + 1;
+            int right = 2 * current + 2;
+            int smallest = current;
             if (left < _size && _heap[left] < _heap[smallest]) smallest = left;
             if (right < _size && _heap[right] < _heap[smallest]) smallest = right;
 
-            if (smallest == i) break;
-
-            (_heap[i], _heap[smallest]) = (_heap[smallest], _heap[i]);
-            i = smallest;
+            if (smallest == current) break;
+            (_heap[current], _heap[smallest]) = (_heap[smallest], _heap[current]);
+            current = smallest;
         }
     }
 }
