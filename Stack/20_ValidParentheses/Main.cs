@@ -2,31 +2,34 @@ public class Solution
 {
     public bool IsValid(string s)
     {
-        Span<char> stack = stackalloc char[s.Length];
-        int top = 0;
+        Stack<char> stack = new();
+
+        bool PopMatchesOpen(char expectedOpen)
+        {
+            return stack.TryPop(out var top) && top == expectedOpen;
+        }
 
         foreach (var c in s)
         {
             switch (c)
             {
                 case '(':
-                case '[':
                 case '{':
-                    stack[top++] = c;
-                    continue;
-
+                case '[':
+                    stack.Push(c);
+                    break;
                 case ')':
-                    if (top == 0 || stack[--top] != '(') return false;
-                    continue;
+                    if (!PopMatchesOpen('(')) return false;
+                    break;
                 case '}':
-                    if (top == 0 || stack[--top] != '{') return false;
-                    continue;
+                    if (!PopMatchesOpen('{')) return false;
+                    break;
                 case ']':
-                    if (top == 0 || stack[--top] != '[') return false;
-                    continue;
+                    if (!PopMatchesOpen('[')) return false;
+                    break;
             }
         }
 
-        return top == 0;
+        return stack.Count == 0;
     }
 }
