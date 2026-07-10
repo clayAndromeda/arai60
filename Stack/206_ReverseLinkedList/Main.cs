@@ -9,17 +9,17 @@
  *     }
  * }
  */
-
 class ListNode;
 
 public class Solution
 {
     public ListNode ReverseList(ListNode head)
     {
-        ListNode prev = null, current = head;
+        ListNode prev = null;
+        ListNode current = head;
         while (current != null)
         {
-            var next = current.next;
+            ListNode next = current.next;
             current.next = prev;
             prev = current;
             current = next;
