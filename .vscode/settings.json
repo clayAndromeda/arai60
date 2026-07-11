@@ -1,0 +1,7 @@
+{
+  "dotnet.defaultSolution": "arai60.slnx",
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+  }
+}

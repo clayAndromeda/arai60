@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Heap/">
+    <Project Path="Heap/347_Top K Frequent Elements/347_Top K Frequent Elements.csproj" />
+    <Project Path="Heap/703_Kth Largest Element in a Stream/703_Kth Largest Element in a Stream.csproj" />
+  </Folder>
+  <Folder Name="/LInkedList/">
+    <Project Path="LInkedList/82_Remove Duplicates from Sorted List II/82_Remove Duplicates from Sorted List II.csproj" />
+    <Project Path="LInkedList/83_RemoveDuplicatesFromSortedList/83_RemoveDuplicatesFromSortedList.csproj" />
+    <Project Path="LInkedList/LinkedListCycle/LinkedListCycle.csproj" />
+    <Project Path="LInkedList/LInkedListCycle2/LInkedListCycle2.csproj" />
+  </Folder>
+  <Folder Name="/Stack/">
+    <Project Path="Stack/206_ReverseLinkedList/206_ReverseLinkedList.csproj" />
+    <Project Path="Stack/20_ValidParentheses/20_ValidParentheses.csproj" />
+  </Folder>
+  <Project Path="Heap/Heap.csproj" />
+</Solution>
