@@ -1,266 +1,14 @@
-#nullable enable
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-
-public class Heap<TElement>
-{
-    private TElement[] _nodes;
-    private readonly IComparer<TElement>? _comparer;
-    private int _size;
-
-    public Heap()
-        : this(0, null)
-    {
-        _nodes = Array.Empty<TElement>();
-        _comparer = InitializeComparer(null);
-    }
-
-    public Heap(int capacity)
-        : this(capacity, null)
-    {
-    }
-
-    public Heap(IComparer<TElement>? comparer)
-    {
-        _nodes = Array.Empty<TElement>();
-        _comparer = InitializeComparer(comparer);
-    }
-
-    public Heap(int capacity, IComparer<TElement>? comparer)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
-        _nodes = new TElement[capacity];
-        _comparer = InitializeComparer(comparer);
-    }
-
-    public int Count => _size;
-
-    public void Enqueue(TElement element)
-    {
-        int currentSize = _size;
-        if (_nodes.Length == currentSize)
-        {
-            Grow(currentSize + 1);
-        }
-
-        _size = currentSize + 1;
-
-        if (_comparer == null)
-        {
-            MoveUpDefaultComparer(element, currentSize);
-        }
-        else
-        {
-            MoveUpCustomComparer(element, currentSize);
-        }
-    }
-
-    public TElement Peak()
-    {
-        if (_size == 0)
-        {
-            throw new InvalidOperationException("Heap is empty");
-        }
-        return _nodes[0];
-    }
-
-    public TElement Dequeue()
-    {
-        if (_size == 0)
-        {
-            throw new InvalidOperationException("Heap is empty");
-        }
-        TElement element = _nodes[0];
-        RemoveRootNode();
-        return element;
-    }
-
-    public TElement DequeueEnqueue(TElement element)
-    {
-        if (_size == 0)
-        {
-            throw new InvalidOperationException("Heap is empty");
-        }
-
-        TElement result = _nodes[0];
-        if (_comparer == null)
-        {
-            MoveDownDefaultComparer(element, 0);
-        }
-        else
-        {
-            MoveDownCustomComparer(element, 0);
-        }
-        return result;
-    }
-
-    private void MoveUpDefaultComparer(TElement element, int nodeIndex)
-    {
-        Debug.Assert(_comparer is null);
-        Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
-
-        TElement[] nodes = _nodes;
-        nodes[nodeIndex] = element;
-
-        while (nodeIndex > 0)
-        {
-            int parent = (nodeIndex - 1) / 2;
-            if (Comparer<TElement>.Default.Compare(nodes[nodeIndex], nodes[parent]) >= 0) break;
-            (nodes[parent], nodes[nodeIndex]) = (nodes[nodeIndex], nodes[parent]);
-            nodeIndex = parent;
-        }
-    }
-
-    private void MoveUpCustomComparer(TElement element, int nodeIndex)
-    {
-        Debug.Assert(_comparer is not null);
-        Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
-
-        TElement[] nodes = _nodes;
-        nodes[nodeIndex] = element;
-
-        while (nodeIndex > 0)
-        {
-            int parent = (nodeIndex - 1) / 2;
-            if (_comparer.Compare(nodes[nodeIndex], nodes[parent]) >= 0) break;
-            (nodes[parent], nodes[nodeIndex]) = (nodes[nodeIndex], nodes[parent]);
-            nodeIndex = parent;
-        }
-    }
-
-    private void RemoveRootNode()
-    {
-        int lastNodeIndex = --_size;
-        if (lastNodeIndex > 0)
-        {
-            TElement lastNode = _nodes[lastNodeIndex];
-            if (_comparer == null)
-            {
-                MoveDownDefaultComparer(lastNode, 0);
-            }
-            else
-            {
-                MoveDownCustomComparer(lastNode, 0);
-            }
-        }
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<TElement>())
-        {
-            _nodes[lastNodeIndex] = default;
-        }
-    }
-
-    private void MoveDownDefaultComparer(TElement element, int nodeIndex)
-    {
-        Debug.Assert(_comparer is null);
-        Debug.Assert(0 <= nodeIndex && nodeIndex <= _size);
-
-        TElement[] nodes = _nodes;
-        int size = _size;
-
-        int i = 0;
-        while ((i = 2 * nodeIndex + 1) < size)
-        {
-            TElement minChild = nodes[i];
-            int minChildIndex = i;
-
-            // i = 左の子
-            int rightChildIndex = i + 1;
-            if (rightChildIndex < size && Comparer<TElement>.Default.Compare(minChild, nodes[rightChildIndex]) > 0)
-            {
-                minChild = nodes[rightChildIndex];
-                minChildIndex = rightChildIndex;
-            }
-
-            if (Comparer<TElement>.Default.Compare(element, minChild) <= 0)
-            {
-                break;
-            }
-            nodes[nodeIndex] = minChild;
-            nodeIndex = minChildIndex;
-        }
-
-        nodes[nodeIndex] = element;
-    }
-
-    private void MoveDownCustomComparer(TElement element, int nodeIndex)
-    {
-        Debug.Assert(_comparer is not null);
-        Debug.Assert(0 <= nodeIndex && nodeIndex <= _size);
-
-        TElement[] nodes = _nodes;
-        int size = _size;
-
-        int i = 0;
-        while ((i = 2 * nodeIndex + 1) < size)
-        {
-            TElement minChild = nodes[i];
-            int minChildIndex = i;
-
-            // i = 左の子
-            int rightChildIndex = i + 1;
-            if (rightChildIndex < size && _comparer.Compare(minChild, nodes[rightChildIndex]) > 0)
-            {
-                minChild = nodes[rightChildIndex];
-                minChildIndex = rightChildIndex;
-            }
-
-            if (_comparer.Compare(element, minChild) <= 0)
-            {
-                break;
-            }
-            nodes[nodeIndex] = minChild;
-            nodeIndex = minChildIndex;
-        }
-
-        nodes[nodeIndex] = element;
-    }
-
-    /// <summary>
-    /// QueueのCapacityを最低でもminCapacityまで広げる
-    /// </summary>
-    private void Grow(int minCapacity)
-    {
-        Debug.Assert(_nodes.Length < minCapacity);
-
-        const int GrowFactor = 2;
-        const int MinimumGrow = 4;
-        // 2倍ずつCapacitryを広げる
-        int newCapacitry = GrowFactor * _nodes.Length;
-        if ((uint)newCapacitry > Array.MaxLength) newCapacitry = Array.MaxLength;
-
-        newCapacitry = Math.Max(newCapacitry, _nodes.Length + MinimumGrow);
-
-        if (newCapacitry < minCapacity) newCapacitry = minCapacity;
-        Array.Resize(ref _nodes, newCapacitry);
-    }
-
-    private static IComparer<TElement>? InitializeComparer(IComparer<TElement>? comparer)
-    {
-        if (typeof(TElement).IsValueType)
-        {
-            if (comparer == Comparer<TElement>.Default)
-            {
-                // 最適化のために、デフォルト比較器はnullに流す
-                return null;
-            }
-            return comparer;
-        }
-        else
-        {
-            return comparer ?? Comparer<TElement>.Default;
-        }
-    }
-}
-
 public class KthLargest
 {
     private int _k;
-    private Heap<int> _heap;
+    private int[] _nodes;
+    private int _size;
 
     public KthLargest(int k, int[] nums)
     {
         _k = k;
-        _heap = new Heap<int>(k);
+        _nodes = new int[k];
+        _size = 0;
         foreach (int num in nums)
         {
             Add(num);
@@ -269,16 +17,60 @@ public class KthLargest
 
     public int Add(int val)
     {
-        if (_heap.Count < _k)
+        if (_size < _k)
         {
-            _heap.Enqueue(val);
+            _nodes[_size] = val;
+            SiftUp();
+            _size++;
         }
-        else if (val > _heap.Peak())
+        else if (_nodes[0] < val)
         {
-            _heap.DequeueEnqueue(val);
+            _nodes[0] = val;
+            SiftDown();
         }
+        return _nodes[0];
+    }
 
-        return _heap.Peak();
+    private void SiftUp()
+    {
+        int nodeIndex = _size;
+        while (nodeIndex > 0)
+        {
+            int parentIndex = (nodeIndex - 1) / 2;
+            if (_nodes[parentIndex] <= _nodes[nodeIndex])
+            {
+                return;
+            }
+            (_nodes[parentIndex], _nodes[nodeIndex]) = (_nodes[nodeIndex], _nodes[parentIndex]);
+            nodeIndex = parentIndex;
+        }
+    }
+
+    private void SiftDown()
+    {
+        int nodeIndex = 0;
+        while (nodeIndex < _size)
+        {
+            int leftIndex = nodeIndex * 2 + 1;
+            int rightIndex = nodeIndex * 2 + 2;
+
+            int minIndex = nodeIndex;
+            if (leftIndex < _size && _nodes[leftIndex] < _nodes[minIndex])
+            {
+                minIndex = leftIndex;
+            }
+            if (rightIndex < _size && _nodes[rightIndex] < _nodes[minIndex])
+            {
+                minIndex = rightIndex;
+            }
+            if (minIndex == nodeIndex)
+            {
+                return;
+            }
+
+            (_nodes[minIndex], _nodes[nodeIndex]) = (_nodes[nodeIndex], _nodes[minIndex]);
+            nodeIndex = minIndex;
+        }
     }
 }
 
