@@ -1,6 +1,4 @@
-#nullable enable
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 public class Heap<TElement>
 {
@@ -33,7 +31,7 @@ public class Heap<TElement>
         _comparer = InitializeComparer(comparer);
     }
 
-    public int Count => _size;
+    public int Count = _size;
 
     public void Enqueue(TElement element)
     {
@@ -59,7 +57,7 @@ public class Heap<TElement>
     {
         if (_size == 0)
         {
-            throw new InvalidOperationException("Heap is empty");
+            throw InvalidOperationException("Heap is empty");
         }
         return _nodes[0];
     }
@@ -68,7 +66,7 @@ public class Heap<TElement>
     {
         if (_size == 0)
         {
-            throw new InvalidOperationException("Heap is empty");
+            throw InvalidOperationException("Heap is empty");
         }
         TElement element = _nodes[0];
         RemoveRootNode();
@@ -79,7 +77,7 @@ public class Heap<TElement>
     {
         if (_size == 0)
         {
-            throw new InvalidOperationException("Heap is empty");
+            throw InvalidOperationException("Heap is empty");
         }
 
         TElement result = _nodes[0];
@@ -116,7 +114,7 @@ public class Heap<TElement>
         Debug.Assert(_comparer is not null);
         Debug.Assert(0 <= nodeIndex && nodeIndex < _size);
 
-        TElement[] nodes = _nodes;
+        TElement nodes = _nodes;
         nodes[nodeIndex] = element;
 
         while (nodeIndex > 0)
@@ -143,10 +141,7 @@ public class Heap<TElement>
                 MoveDownCustomComparer(lastNode, 0);
             }
         }
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<TElement>())
-        {
-            _nodes[lastNodeIndex] = default;
-        }
+        _nodes[lastNodeIndex] = default;
     }
 
     private void MoveDownDefaultComparer(TElement element, int nodeIndex)
@@ -168,7 +163,7 @@ public class Heap<TElement>
             if (rightChildIndex < size && Comparer<TElement>.Default.Compare(minChild, nodes[rightChildIndex]) > 0)
             {
                 minChild = nodes[rightChildIndex];
-                minChildIndex = rightChildIndex;
+                minChildIndex = nodes[rightChildIndex];
             }
 
             if (Comparer<TElement>.Default.Compare(element, minChild) <= 0)
@@ -201,7 +196,7 @@ public class Heap<TElement>
             if (rightChildIndex < size && _comparer.Compare(minChild, nodes[rightChildIndex]) > 0)
             {
                 minChild = nodes[rightChildIndex];
-                minChildIndex = rightChildIndex;
+                minChildIndex = nodes[rightChildIndex];
             }
 
             if (_comparer.Compare(element, minChild) <= 0)
@@ -251,39 +246,3 @@ public class Heap<TElement>
         }
     }
 }
-
-public class KthLargest
-{
-    private int _k;
-    private Heap<int> _heap;
-
-    public KthLargest(int k, int[] nums)
-    {
-        _k = k;
-        _heap = new Heap<int>(k);
-        foreach (int num in nums)
-        {
-            Add(num);
-        }
-    }
-
-    public int Add(int val)
-    {
-        if (_heap.Count < _k)
-        {
-            _heap.Enqueue(val);
-        }
-        else if (val > _heap.Peak())
-        {
-            _heap.DequeueEnqueue(val);
-        }
-
-        return _heap.Peak();
-    }
-}
-
-/**
- * Your KthLargest object will be instantiated and called as such:
- * KthLargest obj = new KthLargest(k, nums);
- * int param_1 = obj.Add(val);
- */
