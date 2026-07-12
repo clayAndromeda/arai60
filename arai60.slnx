@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Heap/">
     <Project Path="Heap/347_Top K Frequent Elements/347_Top K Frequent Elements.csproj" />
+    <Project Path="Heap/373_Find K Pairs with Smallest Sums/373_Find K Pairs with Smallest Sums.csproj" />
     <Project Path="Heap/703_Kth Largest Element in a Stream/703_Kth Largest Element in a Stream.csproj" />
   </Folder>
   <Folder Name="/LInkedList/">
