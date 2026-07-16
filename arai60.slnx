@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/HashMap/">
+    <Project Path="HashMap/1_Two Sum/1_Two Sum.csproj" />
+  </Folder>
   <Folder Name="/Heap/">
     <Project Path="Heap/347_Top K Frequent Elements/347_Top K Frequent Elements.csproj" />
     <Project Path="Heap/373_Find K Pairs with Smallest Sums/373_Find K Pairs with Smallest Sums.csproj" />
