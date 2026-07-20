@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/HashMap/">
     <Project Path="HashMap/1_Two Sum/1_Two Sum.csproj" />
+    <Project Path="HashMap/49_Group Anagrams/49_Group Anagrams.csproj" />
   </Folder>
   <Folder Name="/Heap/">
     <Project Path="Heap/347_Top K Frequent Elements/347_Top K Frequent Elements.csproj" />
